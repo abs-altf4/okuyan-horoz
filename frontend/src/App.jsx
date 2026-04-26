@@ -9,44 +9,37 @@ import RevenueChart from './components/RevenueChart';
 import AuthScreen from './components/AuthScreen';
 
 function App() {
-  // --- 1. STATE YÖNETİMİ ---
+  // --- STATE YÖNETİMİ ---
   const [books, setBooks] = useState([]);
   const [revenueData, setRevenueData] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('Home');
-
-  // Modal Kontrolleri
   const [isAddBookModalOpen, setIsAddBookModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [bookToEdit, setBookToEdit] = useState(null);
-
-  // Sepet Mantığı
   const [cart, setCart] = useState([]);
-  // 1. ADIM: Kullanıcı her değiştiğinde (Login/Logout) sepeti localStorage'dan çek
+
   useEffect(() => {
     if (user) {
-      // Sadece bu kullanıcıya özel sepeti getir (Örn: cart_user1)
       const savedCart = localStorage.getItem(`cart_${user.username}`);
       if (savedCart) {
         setCart(JSON.parse(savedCart));
       } else {
-        setCart([]); // Eğer bu kullanıcı için kayıt yoksa sepeti sıfırla
+        setCart([]);
       }
     } else {
-      // Kimse giriş yapmadıysa ekranı temizle (Güvenlik için)
       setCart([]);
     }
-  }, [user]); // user state'i her değiştiğinde bu blok çalışır
+  }, [user]);
 
-  // 2. ADIM: Sepet her güncellendiğinde localStorage'ı tazele
   useEffect(() => {
     if (user && cart.length >= 0) {
       localStorage.setItem(`cart_${user.username}`, JSON.stringify(cart));
     }
-  }, [cart, user]); // cart veya user değiştikçe kaydeder
+  }, [cart, user]);
 
-  // --- 2. VERİ YÜKLEME (API) ---
+  // --- VERİ YÜKLEME (API) ---
   const loadBooks = async () => {
     try {
       const response = await fetchBooks();
@@ -66,7 +59,7 @@ function App() {
     loadRevenue();
   }, []);
 
-  // --- 3. AUTH (GİRİŞ/ÇIKIŞ) ---
+  // --- AUTH (GİRİŞ/ÇIKIŞ) ---
   const handleLoginSuccess = (userData) => {
     setUser(userData);
     setIsAdmin(userData.role === 'admin');
@@ -80,7 +73,7 @@ function App() {
     setActiveTab('Home');
   };
 
-  // --- 4. SEPET VE SATIŞ İŞLEMLERİ ---
+  // --- SEPET VE SATIŞ İŞLEMLERİ ---
   const addToCart = (book) => {
     setCart((prevCart) => {
       const isExisting = prevCart.find((item) => item.id === book.id);
@@ -106,14 +99,12 @@ function App() {
   };
 
   const handleCheckout = async () => {
-    // 1. KORUMA: Eğer giriş yapmış bir kullanıcı yoksa
     if (!user) {
       alert("Önce giriş yapmalısın!");
-      setActiveTab('Authors'); // Kullanıcıyı otomatik giriş ekranına fırlat
+      setActiveTab('Authors');
       return;
     }
 
-    // 2. KORUMA: Sepet boşsa
     if (cart.length === 0) return alert("Sepet boş, önce kitap seç!");
 
     try {
@@ -127,7 +118,7 @@ function App() {
     }
   };
 
-  // --- 5. CRUD (ADMİN) ---
+  // --- CRUD (ADMİN) ---
   const handleEditInit = (book) => {
     setBookToEdit(book);
     setIsEditModalOpen(true);
@@ -135,7 +126,6 @@ function App() {
 
   return (
     <div className="flex bg-white min-h-screen">
-      {/* SIDEBAR: Menüden Inventory'yi kaldırabilirsin, Home artık her şey! */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -150,7 +140,6 @@ function App() {
 
       <main className="flex-1 p-10 relative">
 
-        {/* 1. AUTHORS SEKMESİ (Giriş/Profil Kapısı) */}
         {activeTab === 'Authors' && !user ? (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <header className="mb-8">
@@ -161,7 +150,6 @@ function App() {
           </div>
         ) : (
           <>
-            {/* HEADER: Dinamik Başlık */}
             <header className="flex justify-between items-center mb-8">
               <div>
                 <h1 className="text-2xl font-bold text-gray-800">
@@ -172,7 +160,6 @@ function App() {
                 </p>
               </div>
 
-              {/* Admin Butonu artık Home sekmesinde de aktif */}
               {isAdmin && activeTab === 'Home' && (
                 <button
                   className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 transition-all shadow-sm font-semibold text-sm"
@@ -183,7 +170,6 @@ function App() {
               )}
             </header>
 
-            {/* --- ANA İÇERİK: HOME (ESKİ INVENTORY) --- */}
             {activeTab === 'Home' && (
               <>
                 {/* Kitap Tablosu */}
@@ -197,7 +183,6 @@ function App() {
                   />
                 </div>
 
-                {/* Grafik sadece Admin'e Home'da görünür */}
                 {isAdmin && (
                   <div className="animate-in fade-in duration-1000">
                     <RevenueChart data={revenueData} />
@@ -227,7 +212,7 @@ function App() {
           </>
         )}
 
-        {/* ADMIN ARAÇLARI: Home sekmesinde de çalışacak şekilde güncellendi */}
+        {/* ADMIN ARAÇLARI: */}
         {isAdmin && activeTab === 'Home' && (
           <>
             <AdminResetButton onResetSuccess={() => { loadBooks(); loadRevenue(); }} />

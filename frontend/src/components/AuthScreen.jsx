@@ -10,7 +10,7 @@ const AuthScreen = ({ onLoginSuccess }) => {
         try {
             const endpoint = isLogin ? '/login' : '/register';
             const response = await api.post(endpoint, formData);
-            onLoginSuccess(response.data); // Kullanıcı verisini yukarı gönder
+            onLoginSuccess(response.data);
             alert(`${isLogin ? 'Giriş' : 'Kayıt'} başarılı!`);
         } catch (err) {
             alert(err.response?.data?.error || "Bir hata oluştu!");

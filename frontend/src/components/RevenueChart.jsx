@@ -1,16 +1,13 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-// Artık 'data'yı prop olarak dışarıdan alıyoruz
 const RevenueChart = ({ data }) => {
 
-    // Eğer veri henüz gelmediyse veya boşsa şık bir yükleniyor/boş mesajı göster
     if (!data || data.length === 0) {
         return (
             <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 mt-8 h-80 flex flex-col items-center justify-center">
                 <h2 className="text-lg font-bold text-gray-800 mb-4 self-start">Monthly Revenue</h2>
                 <p className="text-gray-400 italic text-sm text-center">
-                    Henüz satış verisi bulunamadı reis. <br />
-                    Biraz alışveriş yapın da grafik canlansın!
+                    Henüz satış verisi bulunamadı. <br />
                 </p>
             </div>
         );

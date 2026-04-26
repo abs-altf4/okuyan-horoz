@@ -4,7 +4,7 @@ import { deleteBook } from '../api/apiService';
 const BookTable = ({ books, isAdmin, loadBooks, onEdit, onAddToCart }) => {
 
   const handleDelete = async (id) => {
-    if (window.confirm("Bu kitabı silmek istediğine emin misin reis?")) {
+    if (window.confirm("Bu kitabı silmek istediğine emin misin?")) {
       try {
         await deleteBook(id);
         loadBooks();
@@ -30,10 +30,9 @@ const BookTable = ({ books, isAdmin, loadBooks, onEdit, onAddToCart }) => {
           {books.map((book) => (
             <tr key={book.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors group">
 
-              {/* Kitap Bilgisi - SADECE BAŞLIK KALDI */}
+              {/* Kitap Bilgisi */}
               <td className="py-4 px-4">
                 <div className="font-medium text-gray-800 text-base">{book.title}</div>
-                {/* ID satırı buradan silindi kral, artık tertemiz! */}
               </td>
 
               {/* Yazar Bilgisi */}
@@ -49,7 +48,6 @@ const BookTable = ({ books, isAdmin, loadBooks, onEdit, onAddToCart }) => {
               {/* Kapak Görseli */}
               <td className="py-4 px-4">
                 <div className="w-10 h-14 bg-gray-100 rounded-lg shadow-sm overflow-hidden flex items-center justify-center border border-gray-200">
-                  {/* Kontrolü daha esnek yapıyoruz: Link 'http' ile başlıyorsa göster */}
                   {book.cover_image && book.cover_image.startsWith('http') ? (
                     <img
                       src={book.cover_image}

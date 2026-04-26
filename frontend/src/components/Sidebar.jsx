@@ -2,13 +2,12 @@ import { Home, Users, Package, ShoppingCart, BookOpen, LogOut, Trash2, CreditCar
 import logo from '../assets/logo.png';
 const Sidebar = ({ activeTab, setActiveTab, isAdmin, cart, onRemoveFromCart, onCheckout, user, onLogout, onUpdateQuantity }) => {
 
-  // Toplam ürün adedini hesapla (1 kitap x 5 adet = 5 ürün)
   const totalItemsCount = cart.length; const cartTotal = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
 
   const menuItems = [
     { name: 'Home', icon: <Home size={20} /> },
     { name: 'Authors', icon: <Users size={20} /> },
-    { name: 'Cart', icon: <ShoppingCart size={20} />, count: totalItemsCount }, // Settings yerine Cart!
+    { name: 'Cart', icon: <ShoppingCart size={20} />, count: totalItemsCount },
   ];
 
   return (
@@ -18,7 +17,6 @@ const Sidebar = ({ activeTab, setActiveTab, isAdmin, cart, onRemoveFromCart, onC
         className="flex items-center gap-4 mb-12 px-2 cursor-pointer group"
         onClick={() => setActiveTab('Home')}
       >
-        {/* Logo Kutusu - Boyutu büyüttük (w-18 h-18) */}
         <div className="w-18 h-18 bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden flex items-center justify-center p-1.5 transition-all group-hover:shadow-lg group-hover:scale-105">
           <img
             src={logo}
@@ -27,7 +25,6 @@ const Sidebar = ({ activeTab, setActiveTab, isAdmin, cart, onRemoveFromCart, onC
           />
         </div>
 
-        {/* Yazı Bloğu - Fontu büyüttük ve kalınlaştırdık */}
         <div className="flex flex-col">
           <span className="font-black text-2xl text-gray-900 tracking-tighter leading-[1.1]">
             Okuyan
@@ -38,7 +35,6 @@ const Sidebar = ({ activeTab, setActiveTab, isAdmin, cart, onRemoveFromCart, onC
         </div>
       </div>
 
-      {/* Menü Linkleri */}
       <nav className="space-y-2 mb-8">
         {menuItems.map((item) => (
           <div
@@ -54,7 +50,6 @@ const Sidebar = ({ activeTab, setActiveTab, isAdmin, cart, onRemoveFromCart, onC
               <span>{item.name}</span>
             </div>
 
-            {/* Bildirim Rozeti (Badge) */}
             {item.name === 'Cart' && totalItemsCount > 0 && (
               <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                 {totalItemsCount}
@@ -64,7 +59,7 @@ const Sidebar = ({ activeTab, setActiveTab, isAdmin, cart, onRemoveFromCart, onC
         ))}
       </nav>
 
-      {/* SEPET DETAY MENÜSÜ (Eğer Cart sekmesindeysek gösterelim) */}
+      {/* SEPET DETAY MENÜSÜ */}
       {activeTab === 'Cart' && (
         <div className="flex-1 flex flex-col min-h-0 bg-white rounded-2xl border border-gray-200 p-4 shadow-sm mb-6 overflow-hidden">
           <h3 className="font-bold text-gray-800 text-sm mb-4 border-b pb-2 flex items-center gap-2">
@@ -80,7 +75,6 @@ const Sidebar = ({ activeTab, setActiveTab, isAdmin, cart, onRemoveFromCart, onC
                     <span className="text-[10px] font-bold text-blue-600">₺{(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    {/* Adet Artırma / Azaltma */}
                     <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
                       <button onClick={() => onUpdateQuantity(item.id, -1)} className="p-0.5 hover:bg-white rounded transition-all text-gray-500"><Minus size={12} /></button>
                       <span className="text-[11px] font-bold w-4 text-center">{item.quantity}</span>
@@ -109,7 +103,7 @@ const Sidebar = ({ activeTab, setActiveTab, isAdmin, cart, onRemoveFromCart, onC
         </div>
       )}
 
-      {/* Logout Kısmı (Aynı kalıyor) */}
+      {/* Logout Kısmı */}
       <div className="mt-auto pt-5 border-t border-gray-100">
         {user ? (
           <button onClick={onLogout} className="w-full flex items-center justify-center gap-3 p-3 rounded-xl font-bold bg-red-50 text-red-600 hover:bg-red-100 transition-all"><LogOut size={18} />Logout</button>

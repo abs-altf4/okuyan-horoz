@@ -16,9 +16,9 @@ const AddBookModal = ({ isOpen, onClose, onRefresh }) => {
         e.preventDefault();
         try {
             await addBook(formData);
-            onRefresh(); // Listeyi yenile
-            onClose();   // Modalı kapat
-            setFormData({ title: '', author: '', price: '', cover_image: '' }); // Formu temizle
+            onRefresh();
+            onClose();
+            setFormData({ title: '', author: '', price: '', cover_image: '' });
         } catch (error) {
             alert("Kitap eklenirken hata oluştu!");
         }

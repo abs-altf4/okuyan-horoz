@@ -5,7 +5,7 @@ const AdminResetButton = ({ onResetSuccess }) => {
     if (window.confirm("Sistemi sıfırlamak istiyor musunuz?")) {
       try {
         await resetToGoldenState();
-        onResetSuccess(); // Veriyi tazelemek için ana bileşene haber ver
+        onResetSuccess();
       } catch (error) {
         alert("Resetleme sırasında bir hata oluştu!");
       }

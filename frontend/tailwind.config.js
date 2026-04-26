@@ -2,7 +2,7 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}", // Bu satır src altındaki her şeyi kapsar
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},

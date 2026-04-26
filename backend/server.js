@@ -7,13 +7,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- 1. KİTAP İŞLEMLERİ (CRUD) ---
+// --- KİTAP İŞLEMLERİ (CRUD) ---
 
 // Listeleme
-// server.js içinde böyle olmalı:
 app.get('/api/books', async (req, res) => {
     try {
-        // Yıldız (*) koyduğundan veya cover_image'ı eklediğinden emin ol
         const result = await db.query('SELECT * FROM books ORDER BY id ASC');
         res.json(result.rows);
     } catch (err) {
@@ -61,7 +59,7 @@ app.delete('/api/books/:id', async (req, res) => {
     }
 });
 
-// --- 2. AUTH İŞLEMLERİ (LOGIN/REGISTER) ---
+// ---  AUTH İŞLEMLERİ (LOGIN/REGISTER) ---
 
 // Kayıt Ol
 app.post('/api/register', async (req, res) => {
@@ -97,14 +95,13 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// --- 3. SATIŞ VE GELİR (SALES/REVENUE) ---
+// --- SATIŞ VE GELİR (SALES/REVENUE) ---
 
 // Satın Alma (Adet Hesabı Dahil)
 app.post('/api/sales', async (req, res) => {
     const { cartItems } = req.body;
     try {
         for (const item of cartItems) {
-            // Fiyatı sayıya çevir (TL simgesi varsa temizler) ve miktar ile çarp
             const price = parseFloat(String(item.price).replace(/[^0-9.-]+/g, ""));
             const qty = parseInt(item.quantity) || 1;
             const totalAmount = price * qty;
@@ -114,7 +111,7 @@ app.post('/api/sales', async (req, res) => {
                 [item.id, totalAmount]
             );
         }
-        res.json({ message: 'Satış başarıyla kaydedildi kral!' });
+        res.json({ message: 'Satış başarıyla kaydedildi!' });
     } catch (err) {
         console.error("DB Satış Hatası:", err);
         res.status(500).json({ error: 'Veritabanına yazılamadı.' });
@@ -130,7 +127,7 @@ app.get('/api/revenue', async (req, res) => {
                 COALESCE(SUM(s.amount), 0) AS revenue
             FROM generate_series(1, 12) AS m
             LEFT JOIN sales s ON EXTRACT(MONTH FROM s.sale_date) = m 
-                AND EXTRACT(YEAR FROM s.sale_date) IN (2025, 2026) -- Sadece senin eklediğin yılları kapsasın
+                AND EXTRACT(YEAR FROM s.sale_date) IN (2025, 2026) 
             GROUP BY m
             ORDER BY m;
         `);
@@ -141,15 +138,11 @@ app.get('/api/revenue', async (req, res) => {
     }
 });
 
-// --- 4. SİSTEM (ADMIN RESET) ---
+// --- SİSTEM (ADMIN RESET) ---
 
 app.post('/api/admin/reset', async (req, res) => {
     try {
-        // 1. ADIM: Tabloları temizle ve ID'leri sıfırla (CASCADE ile bağlantıları koparır)
-        // Eğer hata verirse tabloların isimlerinin "sales" ve "books" olduğundan emin ol.
         await db.query('TRUNCATE TABLE sales, books RESTART IDENTITY CASCADE');
-
-        // 2. ADIM: Kitapları ekle (Linkleri boş bıraktım kral, tırnak içlerini doldurursun)
         const insertBooksQuery = `
             INSERT INTO books (title, author, price, cover_image) VALUES
             ('Saatleri Ayarlama Enstitüsü', 'Ahmet Hamdi Tanpınar', 185.00, 'https://img.kitapyurdu.com/v1/getImage/fn:11964184/wi:500/wh:fa194c3f1'),
@@ -158,8 +151,6 @@ app.post('/api/admin/reset', async (req, res) => {
         `;
         await db.query(insertBooksQuery);
 
-        // 3. ADIM: 1 Yıllık Satış Verisi (Ekim ayı yine boş, grafikte çukur oluşsun diye)
-        // book_id değerleri yukarıdaki sırayla 1, 2 ve 3 olacaktır.
         const insertSalesQuery = `
             INSERT INTO sales (book_id, amount, sale_date) VALUES
             (1, 185.00, '2025-05-10'), (2, 420.00, '2025-05-15'),
@@ -179,7 +170,6 @@ app.post('/api/admin/reset', async (req, res) => {
 
         res.json({ message: 'Sistem tertemiz ve veriler yüklendi!' });
     } catch (err) {
-        // Hata olursa terminale (console) detayını yazdırıyoruz ki nedenini görebilelim
         console.error("RESET HATASI DETAYI:", err.message);
         res.status(500).json({ error: 'Reset başarısız: ' + err.message });
     }
